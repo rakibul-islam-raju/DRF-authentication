@@ -47,28 +47,9 @@ class RegisterView(generics.GenericAPIView):
             'data': serializer.data
         }, status=status.HTTP_201_CREATED)
 
-    # def post(self, request):
-    #     user = request.data
-    #     serializer = self.serializer_class(data=user)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     user_data = serializer.data
-    #     user = User.objects.get(email=user_data['email'])
-    #     token = RefreshToken.for_user(user).access_token
-    #     current_site = get_current_site(request).domain
-    #     relativeLink = reverse('auth:email-verify')
-    #     absurl = 'http://' + current_site + relativeLink + "?token=" + str(token)
-    #     email_body = 'Hi ' + user.username + \
-    #                  ' Use the link below to verify your email \n' + absurl
-    #     data = {'email_body': email_body, 'to_email': user.email,
-    #             'email_subject': 'Verify your email'}
-
-    #     Util.send_mail(data)
-    #     return Response(user_data, status=status.HTTP_201_CREATED)
-
 
 class VerifyEmail(views.APIView):
-    serializer_class = EmailVerifySerializer
+    serializer_class = EmailVerificationSerializer
 
     token_param_config = openapi.Parameter(
         'token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
@@ -76,7 +57,6 @@ class VerifyEmail(views.APIView):
     @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
         token = request.GET.get('token')
-        print(token)
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
             user = User.objects.get(id=payload['user_id'])
@@ -100,3 +80,14 @@ class VerifyEmail(views.APIView):
             return Response({
                 'error': 'Invalid token'
                 }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(generics.GenericAPIView):
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data or None)
+        serializer.is_valid(raise_exception=True)
+        return Response({
+            'msg': serializer.data
+        }, status=status.HTTP_200_OK)
