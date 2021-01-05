@@ -1,6 +1,7 @@
 from django.contrib import auth
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
+
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -72,8 +73,6 @@ class LoginSerializer(serializers.ModelSerializer):
 
         if not user:
             raise AuthenticationFailed('Invalid credentions.')
-        if not user.is_verified:
-            raise AuthenticationFailed('Account is not verified.')
         if not user.is_active:
             raise AuthenticationFailed('Account is not active.')
 

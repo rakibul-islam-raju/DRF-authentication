@@ -2,14 +2,14 @@ from django.core.mail import EmailMessage
 import threading
 
 
-class EmailThread(threading.Thread):
+# class EmailThread(threading.Thread):
 
-    def __init__(self, email):
-        self.email = email
-        threading.Thread.__init__(self)
+#     def __init__(self, email):
+#         self.email = email
+#         threading.Thread.__init__(self)
 
-    def run(self):
-        self.email.send()
+#     def run(self):
+#         self.email.send()
 
 
 # class Util:
@@ -23,8 +23,12 @@ class EmailThread(threading.Thread):
 #         EmailThread(email).start()
 
 class Util:
+    # sending email
     @staticmethod
     def send_email(data):
         email = EmailMessage(
-            subject=data['subject'], body=data['body'], to=[data['email_to']])
+            subject=data['subject'], 
+            body=data['body'], 
+            to=[data['email_to']]
+        )
         email.send()
