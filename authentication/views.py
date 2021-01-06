@@ -6,8 +6,8 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 
 from rest_framework.response import Response
-from rest_framework import generics, status, views
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework import generics, status, views, permissions
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -177,3 +177,17 @@ class SetNewPasswordView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response('Password reset successfully.', status=status.HTTP_200_OK)
+
+
+class LogoutView(generics.GenericAPIView):
+    serializer_class = LogoutSerializer
+
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response('logged out', status=status.HTTP_204_NO_CONTENT)
